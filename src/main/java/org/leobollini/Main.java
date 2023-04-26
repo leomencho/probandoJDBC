@@ -1,5 +1,8 @@
 package org.leobollini;
 
+import org.leobollini.modelo.Prueba;
+import org.leobollini.repositorio.ProductoRepositorioImpl;
+import org.leobollini.repositorio.Repositorio;
 import org.leobollini.util.ConexionBD;
 
 import java.sql.*;
@@ -10,12 +13,9 @@ public class Main {
     public static void main(String[] args) {
 
 
-    try (Connection conn= ConexionBD.getInstance();
-         Statement stmt = conn.createStatement();
-         ResultSet resultado = stmt.executeQuery("SELECT * FROM algo")) {
-        while (resultado.next()) {
-            System.out.println(resultado.getString("nombre"));
-        }
+    try (Connection conn= ConexionBD.getInstance()) {
+        Repositorio<Prueba> repositorio = new ProductoRepositorioImpl();
+        repositorio.listar().forEach(p -> System.out.println(p.getNombre()));
     } catch (SQLException e){
         e.printStackTrace();
     }
