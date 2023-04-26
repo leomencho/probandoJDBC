@@ -3,10 +3,7 @@ package org.leobollini.repositorio;
 import org.leobollini.modelo.Prueba;
 import org.leobollini.util.ConexionBD;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,10 +20,7 @@ public class ProductoRepositorioImpl implements  Repositorio<Prueba>{
         try (Statement stmt= getConnection().createStatement();
         ResultSet rs= stmt.executeQuery("SELECT * FROM algo")){
             while (rs.next()){
-                Prueba p = new Prueba();
-                p.setId(rs.getLong("id"));
-                p.setNombre(rs.getString("nombre"));
-                p.setOtro(rs.getString("otro"));
+                Prueba p = crearPrueba(rs);
                 prueba.add(p);
             }
 
@@ -39,7 +33,20 @@ public class ProductoRepositorioImpl implements  Repositorio<Prueba>{
 
     @Override
     public Prueba porId(Long id) {
-        return null;
+        Prueba producto = null;
+
+        try(PreparedStatement stmt= getConnection().prepareStatement("SELECT * FROM algo WHERE id=?")){
+            stmt.setLong(1,id);
+            ResultSet rs= stmt.executeQuery();
+            if (rs.next()){
+                producto= crearPrueba(rs);
+            }
+            rs.close();
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        return producto;
     }
 
     @Override
@@ -50,5 +57,13 @@ public class ProductoRepositorioImpl implements  Repositorio<Prueba>{
     @Override
     public void eliminar(Long id) {
 
+    }
+
+    private static Prueba crearPrueba(ResultSet rs) throws SQLException {
+        Prueba p = new Prueba();
+        p.setId(rs.getLong("id"));
+        p.setNombre(rs.getString("nombre"));
+        p.setOtro(rs.getString("otro"));
+        return p;
     }
 }

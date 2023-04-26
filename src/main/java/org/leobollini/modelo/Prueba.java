@@ -40,4 +40,13 @@ public class Prueba {
     public void setOtro(String otro) {
         this.otro = otro;
     }
+
+    @Override
+    public String toString() {
+        return "Prueba{" +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
+                ", otro='" + otro + '\'' +
+                '}';
+    }
 }

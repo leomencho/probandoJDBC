@@ -15,7 +15,8 @@ public class Main {
 
     try (Connection conn= ConexionBD.getInstance()) {
         Repositorio<Prueba> repositorio = new ProductoRepositorioImpl();
-        repositorio.listar().forEach(p -> System.out.println(p.getNombre()));
+        repositorio.listar().forEach(p -> System.out.println(p));
+        System.out.println(repositorio.porId(2L));
     } catch (SQLException e){
         e.printStackTrace();
     }
