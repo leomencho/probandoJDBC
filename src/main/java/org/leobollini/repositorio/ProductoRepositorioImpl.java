@@ -37,11 +37,12 @@ public class ProductoRepositorioImpl implements  Repositorio<Prueba>{
 
         try(PreparedStatement stmt= getConnection().prepareStatement("SELECT * FROM algo WHERE id=?")){
             stmt.setLong(1,id);
-            ResultSet rs= stmt.executeQuery();
-            if (rs.next()){
-                producto= crearPrueba(rs);
+            //con este try anidados implementamos un auto close.
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    producto = crearPrueba(rs);
+                }
             }
-            rs.close();
         } catch (SQLException e){
             e.printStackTrace();
         }
@@ -51,11 +52,37 @@ public class ProductoRepositorioImpl implements  Repositorio<Prueba>{
 
     @Override
     public void guardar(Prueba prueba) {
+        String sql;
+        if(prueba.getId()!=null && prueba.getId()>0){
+            sql="UPDATE  algo SET nombre=?, otro=? WHERE id=?";
+        }
+        else {
+            sql="INSERT INTO algo (nombre, otro) VALUES(?,?)";
+        }
+        try(PreparedStatement stmp= getConnection().prepareStatement(sql)){
+            stmp.setString(1, prueba.getNombre());
+            stmp.setString(2,prueba.getOtro());
+
+            if (prueba.getId()!=null && prueba.getId()>0){
+                stmp.setLong(3, prueba.getId());
+            }
+            stmp.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
     @Override
     public void eliminar(Long id) {
+        try(PreparedStatement stmt= getConnection().prepareStatement("DELETE FROM algo WHERE id=?")){
+            stmt.setLong(1, id);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 
